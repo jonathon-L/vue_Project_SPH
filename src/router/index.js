@@ -37,7 +37,16 @@ const routes = [
         name:'search',
         path: '/search/:keyword?',
         component: Search,
-        meta:{show:true}
+        meta:{show:true},
+        // props传递参数---三种写法
+        // props:true
+        // props:{a:1,b:2}
+        props:(route) => {
+            return{
+                keyword:route.params.keyword,
+                k:route.query.k
+            }
+        }
     },
 ]
     

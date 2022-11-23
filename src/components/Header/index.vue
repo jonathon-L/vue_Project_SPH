@@ -47,17 +47,19 @@ let keyword = ref('')
 const router = useRouter()
     const goSearch = () => {
 
+        // let a = router.push({
         router.push({
             // path:'/search'
             name:'search',
             params:{
-                keyword:keyword.value
+                keyword:keyword.value || undefined
             },
             query:{
                 k:keyword.value.toUpperCase()
             },
             
         })
+        // console.log(a)
     }
 </script>
 
