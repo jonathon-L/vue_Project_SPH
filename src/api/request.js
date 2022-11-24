@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const instance = axios.create({
     
-    baseURL:'/admin',
+    baseURL:'/api',
     // 请求超出的时间
     timeout:5000
 })

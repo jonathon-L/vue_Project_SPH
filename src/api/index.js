@@ -2,3 +2,10 @@
 
 import instance from './request'
 
+export const testCategory = () => {
+    instance({
+        url:'http://gmall-h5-api.atguigu.cn/api/product/getBaseCategoryList'
+        ,method:'get'
+    })
+}
+

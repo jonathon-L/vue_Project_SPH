@@ -4,9 +4,9 @@ module.exports = defineConfig({
   lintOnSave:false, //关闭语法检查
   devServer: {
     proxy: {
-      '/admin': {
-        target: 'http://39.98.123.211:8510',
-        pathRewrite: { '^/admin': '' }
+      '/api': {
+        target: 'http://39.98.123.211',
+        pathRewrite: { '^/api': '' }
       },
       
     },
