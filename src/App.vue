@@ -9,6 +9,7 @@ import Header from './components/Header/index.vue'
 import Footer from './components/Footer/index.vue'
 import { useRoute } from 'vue-router'
 const route = useRoute()
+
 </script>
 
 <style scoped>

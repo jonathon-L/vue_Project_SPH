@@ -10,8 +10,10 @@ import store from './store'
 // 引入pinia
 import { createPinia } from 'pinia'
 
+
 const app = createApp(App)
 const pinia = createPinia()
+
 // 使用全局组件
 app.component('TypeNav',TypeNav)
 // 使用vue-router

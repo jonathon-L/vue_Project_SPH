@@ -1,7 +1,38 @@
 <template>
  <div class="type-nav">
             <div class="container">
+                <div @mouseleave="leaveIndex">
                 <h2 class="all">全部商品分类</h2>
+                    <div class="sort">
+                    <div class="all-sort-list2" @click="goSearch">
+                        <!-- 三级分类 -->
+                        <div class="item bo" v-for="(c1,index) in categoryList" :key="c1.categoryId" :class="{cur:currentIndex == index}">
+                            <h3 @mouseenter="changeIndex(index)">
+                                <!-- 添加自定义属性 -->
+                                <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{c1.categoryName}}</a>
+                            </h3>
+                            <!-- 二三级分类 -->
+                            <div class="item-list clearfix" :style="{display:currentIndex == index? 'block':'none'}">
+                                <div class="subitem" v-for="c2 in c1.categoryChild" :key="c2.categoryId">
+                                    <dl class="fore">
+                                        <dt>
+                                                <!-- 添加自定义属性 -->
+                                            <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{c2.categoryName}}</a>
+                                        </dt>
+                                        <dd>
+                                            <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
+                                                <!-- 添加自定义属性 -->
+                                                <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{c3.categoryName}}</a>
+                                            </em>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                </div>
                 <nav class="nav">
                     <a href="###">服装城</a>
                     <a href="###">美妆馆</a>
@@ -12,48 +43,75 @@
                     <a href="###">有趣</a>
                     <a href="###">秒杀</a>
                 </nav>
-                <div class="sort">
-                    <div class="all-sort-list2">
-                        <div class="item bo" v-for="(c1) in categoryList" :key="c1.categoryId">
-                            <h3>
-                                <a href="">{{c1.categoryName}}</a>
-                            </h3>
-                            <div class="item-list clearfix">
-                                <div class="subitem" v-for="c2 in c1.categoryChild" :key="c2.categoryId">
-                                    <dl class="fore">
-                                        <dt>
-                                            <a href="">{{c2.categoryName}}</a>
-                                        </dt>
-                                        <dd>
-                                            <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
-                                                <a href="">{{c3.categoryName}}</a>
-                                            </em>
-                                        </dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
+                
             </div>
         </div>
 </template>
 
 <script setup>
-import { useHomeStore } from "@/store/Home";
+import {useHomeStore} from '../store/Home'
 import {  onMounted, ref } from "@vue/runtime-core";
-    
-    let categoryList = ref([])
-    const store = useHomeStore()
-    onMounted(() => {
-        store.category().then((res) => {
-            categoryList.value= res
-        }).catch((err) => {
-            console.log(err)
-        })
+import { storeToRefs } from 'pinia'
 
-    })
+// 引入lodash----里面有很多函数，可以进行函数防抖
+// 全部引入
+// import _ from 'lodash'
+//按需引入，也是优化之一
+import throttle from 'lodash/throttle.js'
+import { useRouter } from 'vue-router';
+// console.log(throttle)
+// console.log(_)
+// 测试lodash
+// 函数防抖
+// console.log(_.debounce(function(){},1000))
+//函数节流
+// _.throttle(function(){},1000)
+
+    const store = useHomeStore()
+    store.category()//使用Home.js里面的函数
+    const {categoryList} = storeToRefs(store)
+    // console.log(categoryList)
+
+    // 三级联动菜单的索引值，添加背景颜色
+    let currentIndex = ref(-1)
+    //设置函数节流_.throttle，如果是按需引入就只用throttle
+    const changeIndex = throttle((index) => {
+        currentIndex.value = index
+        // console.log(index)
+    },50)
+    const leaveIndex = () => {
+        currentIndex.value = -1
+    }
+    //定义router
+    const router = useRouter()
+
+    //跳转到search路由
+    const goSearch = (event) => {
+        //获取事件的的节点
+        let element = event.target
+        // 结点里面有一个dataset可以发现节点的自定义属性和属性值，但是自定义属性值会全部转化为小写
+        // console.log(element.dataset)
+        // data-categoryName data-category2Id ->categoryname category2id
+        const {categoryname,category1id,category2id,category3id} = element.dataset
+        //如果标签身上有categoryname属性，就一定是a标签
+        if(categoryname){
+            let location = {name:'search'}
+            let query = {categoryName:categoryname}
+            if(category1id){
+                query.categoryId = category1id
+            }else if(category2id){
+                query.categoryId = category2id
+            }else{
+                query.categoryId = category3id
+            }
+            location.query = query
+            router.push(location)
+
+        }
+
+
+
+    }
     
  
     
@@ -61,6 +119,9 @@ import {  onMounted, ref } from "@vue/runtime-core";
 
 <style scoped lang="less">
 .type-nav {
+    .cur{
+        background-color: skyblue;
+    }
         border-bottom: 2px solid #e1251b;
 
         .container {
@@ -169,11 +230,11 @@ import {  onMounted, ref } from "@vue/runtime-core";
                             }
                         }
 
-                        &:hover {
-                            .item-list {
-                                display: block;
-                            }
-                        }
+                        // &:hover {
+                        //     .item-list {
+                        //         display: block;
+                        //     }
+                        // }
                     }
                 }
             }
