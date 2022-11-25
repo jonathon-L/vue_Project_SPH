@@ -1,6 +1,5 @@
 <template>
  <div class="type-nav">
- 
             <div class="container">
                 <h2 class="all">全部商品分类</h2>
                 <nav class="nav">
@@ -42,18 +41,21 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, toRefs } from "@vue/runtime-core";
-import { useStore} from "vuex";
-
-    const store = useStore()
+import { useHomeStore } from "@/store/Home";
+import {  onMounted, ref } from "@vue/runtime-core";
+    
+    let categoryList = ref([])
+    const store = useHomeStore()
     onMounted(() => {
-        store.dispatch('categoryList')
+        store.category().then((res) => {
+            categoryList.value= res
+        }).catch((err) => {
+            console.log(err)
+        })
+
     })
     
-    const {categoryList} = toRefs(store.state.Home) 
-    
-    // console.log("sss",store.state)
-    console.log("list",categoryList)
+ 
     
 </script>
 

@@ -1,25 +1,17 @@
+import { defineStore } from 'pinia'
+import { reactive, ref, toRefs } from 'vue'
 import {testCategory} from '../api'
-const state={
-    categoryList:[]
-}
-const actions={
-    async categoryList({commit}){
+
+export const useHomeStore = defineStore('Home',() => {
+    
+    async function category(){
         let result = await testCategory()
-        // console.log(this)
         if(result.code == 200){
-            commit('CATEGORYLIST',result.data)
+            return result.data
         }
+        
     }
-}
-const mutations={
-    CATEGORYLIST(state,value){
-        state.categoryList = value
+    return{
+        category,
     }
-}
-const getters={}
-export default{
-    state,
-    actions,
-    mutations,
-    getters
-}
+})

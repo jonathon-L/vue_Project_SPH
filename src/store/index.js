@@ -17,7 +17,6 @@ export default createStore({
 
     },
     modules:{
-        Home,
         Search
     }
 })
