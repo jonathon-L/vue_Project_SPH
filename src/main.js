@@ -10,6 +10,12 @@ import store from './store'
 // 引入pinia
 import { createPinia } from 'pinia'
 
+//引入Swiper样式
+import 'swiper/css/swiper.css'
+
+//引入mockjs
+import '@/mock/mockServe'
+
 
 const app = createApp(App)
 const pinia = createPinia()
