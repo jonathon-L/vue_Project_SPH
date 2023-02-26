@@ -1,17 +1,20 @@
 <template>
+  <!-- 封装一个全局组件---轮播图组件 -->
   <div class="floor">
     <div class="py-container">
       <div class="title clearfix">
         <h3 class="fl">家用电器</h3>
         <div class="fr">
-          <ul
-            class="nav-tabs clearfix"
-            v-for="(navlist, index) in list.navList" :key="index"
-          >
-            <li class="active">
+          <ul class="nav-tabs clearfix">
+            <li
+              class="active"
+              v-for="(navlist, index) in floorList.list.navList"
+              :key="index"
+            >
               <a :href="navlist.url" data-toggle="tab">{{ navlist.text }}</a>
             </li>
           </ul>
+          <!--  -->
         </div>
       </div>
       <div class="tab-content">
@@ -19,61 +22,46 @@
           <div class="floor-1">
             <div class="blockgary">
               <ul class="jd-list">
-                <li>节能补贴</li>
-                <li>4K电视</li>
-                <li>空气净化器</li>
-                <li>IH电饭煲</li>
-                <li>滚筒洗衣机</li>
-                <li>电热水器</li>
+                <!-- 在li里面遍历 -->
+                <li
+                  v-for="(keyword, index) in floorList.list.keywords"
+                  :key="index"
+                >
+                  {{ keyword }}
+                </li>
               </ul>
-              <img src="./images/home/floor-1-1.png" />
+              <img :src="list.imgUrl" />
             </div>
             <div class="floorBanner">
-              <div class="swiper-container" id="floor1Swiper">
-                <div class="swiper-wrapper">
-                  <div class="swiper-slide">
-                    <img src="./images/home/floor-1-b01.png" />
-                  </div>
-                  <!-- <div class="swiper-slide">
-                                            <img src="./images/home/floor-1-b02.png">
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <img src="./images/home/floor-1-b03.png">
-                                        </div> -->
-                </div>
-                <!-- 如果需要分页器 -->
-                <div class="swiper-pagination"></div>
-
-                <!-- 如果需要导航按钮 -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-              </div>
+              <!-- 引入全局轮播图组件 -->
+              <Carousel :list="floorList.list.carouselList" />
             </div>
             <div class="split">
               <span class="floor-x-line"></span>
               <div class="floor-conver-pit">
-                <img src="./images/home/floor-1-2.png" />
+                <img :src="floorList.list.recommendList[0]" />
               </div>
               <div class="floor-conver-pit">
-                <img src="./images/home/floor-1-3.png" />
+                <img :src="floorList.list.recommendList[1]" />
               </div>
             </div>
             <div class="split center">
-              <img src="./images/home/floor-1-4.png" />
+              <img :src="floorList.list.bigImg" />
             </div>
             <div class="split">
               <span class="floor-x-line"></span>
               <div class="floor-conver-pit">
-                <img src="./images/home/floor-1-5.png" />
+                <img :src="floorList.list.recommendList[2]" />
               </div>
               <div class="floor-conver-pit">
-                <img src="./images/home/floor-1-6.png" />
+                <img :src="floorList.list.recommendList[3]" />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- <h1>{{floorList.list}}</h1> -->
   </div>
 </template>
 
@@ -82,12 +70,13 @@ import { useHomeStore } from "../../store/Home";
 //引入swiper
 import Swiper from "swiper";
 import { storeToRefs } from "pinia";
+import { nextTick, onMounted, watch } from "@vue/runtime-core";
 const store = useHomeStore();
 
-const { floorList } = storeToRefs(store);
+//接收props --- 父组件传来的list---- list不能被监听，因为是父组件传来的数据，没有变化所以不能监听
+// 为了可以监听到传来的list，在vue3里面可以赋值一个变量floorList在监听
+const floorList = defineProps(["list"]);
 
-//接收props --- 父组件传来的list
-defineProps(["list"]);
 // console.log(floorList)
 </script>
 

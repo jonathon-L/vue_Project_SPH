@@ -3,23 +3,7 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
-          <div class="swiper-wrapper">
-            <div
-              class="swiper-slide"
-              v-for="carousel in bannerList"
-              :key="carousel.id"
-            >
-              <img :src="carousel.imgUrl" />
-            </div>
-          </div>
-          <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
-
-          <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
-        </div>
+        <Carousel :list="bannerList" />
       </div>
       <div class="right">
         <div class="news">
@@ -92,8 +76,6 @@
       </div>
     </div>
   </div>
-  <!-- <h1>{{bannerList[0].imgUrl}}</h1>
-  <img :src="bannerList[0].imgUrl" alt=""> -->
 </template>
 
 <script setup>
@@ -107,31 +89,11 @@ const store = useHomeStore();
 // console.log(store.getMock())
 
 //调用action的getBannerList,使state的bannerList有值
-store.getBannerList();
+store.getBannerList(); 
 
 const { bannerList } = storeToRefs(store);
 // console.log(bannerList);
-onMounted(() => {});
-watch(bannerList, () => {
-    //nextTick() 可以在 状态改变(v-for循环结束后) 后立即使用，以等待 DOM 更新完成。你可以传递一个回调函数作为参数，或者 await 返回的 Promise。
-  nextTick(() => {
-    var mySwiper = new Swiper(".swiper-container", {
-      loop: true, // 循环模式选项
 
-      // 如果需要分页器
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true, //下面的小球也可以点击
-      },
-
-      // 如果需要前进后退按钮
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-    });
-  });
-});
 
 </script>
 
