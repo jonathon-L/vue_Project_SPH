@@ -24,6 +24,7 @@ export const useSearchStore = defineStore("search", {
       // console.log(result.data)
       if (result.code == 200) {
         this.searchList = result.data;
+        
       }
     },
   },
