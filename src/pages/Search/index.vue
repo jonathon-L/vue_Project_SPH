@@ -11,15 +11,19 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <!-- 分类的面包屑 -->
+            <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
+            <!-- 关键字的面包屑 -->
+            <li class="with-x" v-if="searchParams.keyword">{{searchParams.keyword}}<i @click="removeKeyword">×</i></li>
+            <!-- 品牌的面包屑 -->
+            <li class="with-x" v-if="searchParams.trademark">{{searchParams.trademark.split(":")[1]}}<i @click="removeTradeMark">×</i></li>
+            <!-- 平台的售卖的属性值展示 -->
+            <li class="with-x" v-for="(attrValue, index) in searchParams.props" :key="index">{{attrValue.split(":")[1]}}<i @click="removeAttr(index)">×</i></li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector @trademarkInfo="trademarkInfo" @attrInfo="attrInfo" />
 
         <!--details-->
         <div class="details clearfix">
@@ -130,12 +134,16 @@ import {
   onUnmounted,
   onUpdated,
   reactive,
+  ref,
+  watch,
 } from "@vue/runtime-core";
 import { mapGetters } from "vuex";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import emmiter from "@/utils/bus"
 
 const store = useSearchStore();
 const route = useRoute();
+const router = useRouter();
 
 //search模块带的带的参数
 let searchParams = reactive({
@@ -165,11 +173,24 @@ let searchParams = reactive({
 onBeforeMount(() => {
   Object.assign(searchParams, route.query, route.params); //合并对象
   store.getSearchList(searchParams);
+  // console.log(searchParams);
 });
 onUnmounted(() => {
-  console.log(searchParams);
+  // console.log(searchParams);
   store.getSearchList(searchParams);
 });
+// 上面的mounted只会第一次发送请求，这个watch用于监测路由的变化，每一次变化都会触发
+watch(route,(newValue,oldValue) => {
+  // console.log(123) //测试是否可以监听路由
+  Object.assign(searchParams, route.query, route.params)
+  store.getSearchList(searchParams);
+
+// 每一次发送请求的时候把相应的3级分类置空
+  searchParams.category1Id=''
+  searchParams.category2Id=''
+  searchParams.category3Id=''
+
+})
 // console.log(Object.assign(searchParams,route.query,route.params))
 // Object.assign的第一个参数是目标参数，剩下的参数是合并到目标参数的数据
 // goodsList,attrsList,trademarkList 是getter的值
@@ -177,7 +198,88 @@ const { searchList, goodsList, attrsList, trademarkList } = storeToRefs(store);
 //这里的searchList只是一个ref
 // console.log(searchList.value.attrsList)
 // console.log(searchList)
+
+
+const removeCategoryName = () => {
+  // 只是把带给服务器的置空了
+  searchParams.categoryName = undefined
+  searchParams.category1Id=undefined
+  searchParams.category2Id=undefined
+  searchParams.category3Id=undefined
+  // 要重新发送给服务器新的数据
+  store.getSearchList(searchParams)
+
+  // 地址栏的信息也需要更改,自己的路由组件下跳自己
+  // router.push({name:"search"}) //不严谨，
+  router.push(
+    {
+      name:"search",
+      params:route.params //删除该删除的参数,如果有其参数要保留在搜索框中
+    }
+  )
+  // console.log(route.params)
+}
+
+const removeKeyword = () => {
+  // 只是把带给服务器的置空了
+  searchParams.keyword = undefined
+  searchParams.category1Id=undefined
+  searchParams.category2Id=undefined
+  searchParams.category3Id=undefined
+  // 要重新发送给服务器新的数据
+
+  // 地址栏的信息也需要更改,自己的路由组件下跳自己
+  // router.push({name:"search"}) //不严谨，
+
   
+  store.getSearchList(searchParams)
+
+  //通知兄弟组件header删除keyword
+  emmiter.emit("clear")
+  if(route.query){
+    router.push({
+      name:"search",
+      query:route.query
+    })
+  }
+ 
+  // console.log(route.params)
+}
+
+//自定义事件,接收子组件传来的数据
+const trademarkInfo = (trademark) => {
+  // console.log(tradeMark)
+  // searchParams.trademark = `${tradeMark}:${tradeMark}`
+  searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`
+  // console.log(searchParams.trademark)
+  store.getSearchList(searchParams)
+
+} 
+
+// 接受平台属性的信息，自定义事件子传父
+const attrInfo = (attr,attrValue) => {
+  // console.log(attr)
+  // console.log(attrValue)
+  let prop = `${attr.attrId}:${attrValue}:${attr.attrName}`
+  // 要进行数组去重
+  // 在数组中判断这个prop这个元素在不在数组中，如果不在就会返回-1，在的话会返回下标
+  if(searchParams.props.indexOf(prop)==-1)searchParams.props.push(prop)
+  
+  store.getSearchList(searchParams)
+
+}
+// 删除品牌的信息
+const removeTradeMark = () => {
+  searchParams.trademark = undefined
+  store.getSearchList(searchParams)
+}
+
+// 删除平台属性的信息
+const removeAttr = (index) => {
+  console.log(index)
+  searchParams.props.splice(index,1)
+  store.getSearchList(searchParams)
+}
 </script>
 
 <style lang="less" scoped>

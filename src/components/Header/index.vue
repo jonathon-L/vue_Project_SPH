@@ -53,7 +53,11 @@
 
 <script setup>
 import { ref } from "@vue/reactivity";
+import { onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import emmiter from "@/utils/bus"
+import emitter from "@/utils/bus";
+
 let keyword = ref("");
 const router = useRouter();
 const route = useRoute()
@@ -69,6 +73,13 @@ const goSearch = () => {
     router.push(location)
   }
 };
+
+onMounted(() => {
+  //
+  emitter.on("clear",() => {
+    keyword.value = ''
+  })
+})
 </script>
 
 <style lang="less" scoped>

@@ -16,8 +16,6 @@ import 'swiper/css/swiper.css'
 import '@/mock/mockServe'
 
 
-
-
 const app = createApp(App)
 const pinia = createPinia()
 

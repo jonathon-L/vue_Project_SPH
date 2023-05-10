@@ -4,24 +4,7 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li>索尼（SONY）</li>
-          <li>TCL</li>
-          <li>长虹（CHANGHONG）</li>
-          <li>飞利浦（PHILIPS）</li>
-          <li>风行电视</li>
-          <li><img src="./images/phone06.png" /></li>
-          <li><img src="./images/phone07.png" /></li>
-          <li><img src="./images/phone08.png" /></li>
-          <li><img src="./images/phone09.png" /></li>
-          <li><img src="./images/phone10.png" /></li>
-          <li><img src="./images/phone11.png" /></li>
-          <li><img src="./images/phone12.png" /></li>
-          <li><img src="./images/phone12.png" /></li>
-          <li><img src="./images/phone14.png" /></li>
-          <li><img src="./images/phone01.png" /></li>
-          <li><img src="./images/phone06.png" /></li>
-          <li><img src="./images/phone07.png" /></li>
-          <li><img src="./images/phone02.png" /></li>
+          <li v-for="(trademark) in trademarkList" :key="trademark.tmId" @click="tradeMarkHandler(trademark)">{{trademark.tmName}}</li>
         </ul>
       </div>
       <div class="ext">
@@ -33,7 +16,7 @@
       <div class="fl key">{{attr.attrName}}</div>
       <div class="fl value">
         <ul class="type-list">
-          <li v-for="(attrValue, index) in attr.attrValueList" :key="index">
+          <li v-for="(attrValue, index) in attr.attrValueList" :key="index" @click="attrInfo(attr,attrValue)">
             <a>{{attrValue}}</a>
           </li>
         </ul>
@@ -46,16 +29,36 @@
 
 <script setup>
 import { useSearchStore } from "@/store/Search";
-import { storeToRefs } from "pinia";
-
+import { storeToRefs } from "pinia"; 
+import { useRoute, useRouter } from "vue-router";
+ 
 
   const store  =  useSearchStore()
+  const router = useRouter
+  const route = useRoute
   // store.getSearchList()
 
   //getter里面的东西也可以直接使用在这里--storeToRefs
   const {goodsList, attrsList, trademarkList } = storeToRefs(store);
 
- 
+  const emit = defineEmits(['trademarkInfo','attrInfo'])
+ const tradeMarkHandler = (trademark) => {
+  // alert(123)  
+  // 点击品牌后还需要对服务器发请求
+  // 有一点是,要在父组件里面发请求,为什么? ->  因为父组件中的searchParam参数是带给服务器的参数,子组件把你点击的品牌的信息传递给父组件来发送请求
+  // 子传父用defineEmits
+  // console.log(trademark)
+  emit('trademarkInfo',trademark)
+ }
+
+ //平台售卖属性值的
+ const attrInfo = (attr,attrValue) => {
+  emit('attrInfo',attr,attrValue)
+  // alert(123)
+  
+
+ }
+
 </script>
 
 <style lang="less" scoped>
